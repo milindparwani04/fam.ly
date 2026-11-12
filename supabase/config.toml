@@ -427,24 +427,24 @@ enabled = true
 # Called by pg_cron with a shared secret header, not a user JWT.
 verify_jwt = false
 
-# Your hosted project. Values here override the local ones above when pushing to it.
-[remotes.production]
-project_id = "your-project-ref"
+# Your hosted project (uncomment and set project_id to your Supabase ref). Values here override the local ones above when pushing to it.
+# [remotes.production]
+# project_id = "your-project-ref"
 
-[remotes.production.auth]
-site_url = "https://famly.example.com"
-additional_redirect_urls = ["https://famly.example.com"]
+# [remotes.production.auth]
+# site_url = "https://famly.example.com"
+# additional_redirect_urls = ["https://famly.example.com"]
 
 # Sign-in codes are sent through Resend from the family domain. The key is read from the
 # environment at push time (supabase/.env.hosted, never committed).
-[remotes.production.auth.email.smtp]
-enabled = true
-host = "smtp.resend.com"
-port = 465
-user = "resend"
-pass = "env(RESEND_API_KEY)"
-admin_email = "no-reply@example.com"
-sender_name = "fam.ly"
+# [remotes.production.auth.email.smtp]
+# enabled = true
+# host = "smtp.resend.com"
+# port = 465
+# user = "resend"
+# pass = "env(RESEND_API_KEY)"
+# admin_email = "no-reply@example.com"
+# sender_name = "fam.ly"
 
 [functions.health-check]
 # Called by pg_cron with the shared secret header, not a user JWT.
