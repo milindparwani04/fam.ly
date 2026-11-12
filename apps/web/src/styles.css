@@ -418,9 +418,15 @@ legend + * { clear: both; }
 .sq-btn svg { width: 16px; height: 16px; stroke-width: 2.6; }
 .wait-primary { height: 34px; min-height: 0; padding: 0 14px; border-radius: 10px; font-size: 14px; }
 .all-clear { border: 2px dashed var(--ink); border-radius: 16px; padding: 16px; font-weight: 600; font-size: 15px; text-align: center; }
-/* Leftover height is split evenly above and below Cars, so the gap after the last Waiting card matches the gap
-   above the tab bar (both = the 10px flex gap/padding + half the free space). */
-.cars-sec { margin-block: auto; }
+/* Cars sits straight under Waiting For You (founder, 2026-11-12). Waiting takes the leftover height so there's
+   no empty band at the bottom: the Add Task tile under the last card stretches into it. */
+.wait-sec { flex: 1 0 auto; }
+.add-task {
+  flex: 1 0 46px; min-height: 46px; border: 2px dashed var(--ink); border-radius: 16px; display: flex; align-items: center;
+  justify-content: center; gap: 8px; font-weight: 700; font-size: 16px; color: var(--ink); text-decoration: none;
+}
+.add-task:active { background: var(--card); }
+.add-task .plus { font: 700 20px var(--mono); line-height: 1; }
 .car-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .car-tile { border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
 .car-tile .name { font-weight: 800; font-size: 17px; line-height: 1.1; overflow-wrap: anywhere; }
@@ -453,7 +459,7 @@ a.tile-btn { display: grid; place-items: center; border: 2px solid var(--ink); f
 .seg { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--ink); border-radius: 14px; padding: 3px; background: var(--card); }
 .seg button { height: 38px; min-height: 0; border: 0; border-radius: 10px; background: transparent; color: var(--ink); font-size: 15px; }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--card); }
-.filters { display: flex; gap: 6px; overflow-x: auto; }
+.filters { display: flex; flex-shrink: 0; gap: 6px; overflow-x: auto; }
 .filters button {
   flex: none; height: 32px; min-height: 0; padding: 0 14px; border-radius: 999px; background: var(--card); color: var(--ink);
   font-weight: 600; font-size: 14px;

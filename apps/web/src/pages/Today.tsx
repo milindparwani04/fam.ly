@@ -273,7 +273,7 @@ function Waiting({ group, names }: { group: Group; names: Map<string, string> })
   const busy = respond.isPending || complete.isPending || accept.isPending || snooze.isPending || confirmHome.isPending;
   const loading = tasks.isPending || menus.isPending || toReview.isPending;
   return (
-    <section className="sec" aria-label="Waiting for you">
+    <section className="sec wait-sec" aria-label="Waiting for you">
       <div className="title-count">
         <h2>Waiting For You</h2>
         {items.length > 0 && <span className="count-badge">{items.length}</span>}
@@ -296,6 +296,7 @@ function Waiting({ group, names }: { group: Group; names: Map<string, string> })
       {items.length > 2 && <Link to="/family?view=todos" className="more-link">{items.length - 2} more in Plans</Link>}
       {!loading && items.length === 0 && <div className="all-clear">All clear. Nothing needs you right now.</div>}
       {error && <p className="error" role="alert">{messageOf(error)}</p>}
+      <Link to="/family/tasks/new" className="add-task"><span className="plus" aria-hidden="true">+</span>Add Task</Link>
     </section>
   );
 }
