@@ -1,0 +1,49 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 2 * * *"   # nightly: concurrency harness + dependency audit on a quiet tree
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Dependency audit (high and critical)
+        run: pnpm audit --audit-level high
+      - run: pnpm typecheck
+      - run: pnpm --filter @famly/domain test
+      - name: Web build
+        run: pnpm --filter @famly/web exec vite build
+
+      - name: Start local Supabase
+        run: pnpm exec supabase start
+      - name: pgTAP (RLS, constraints, RPCs, notifications, privacy, security fuzz)
+        run: pnpm exec supabase test db
+      - name: Concurrency harness (T01, T02, T07, T11)
+        run: pnpm test:concurrency
+
+  secrets-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

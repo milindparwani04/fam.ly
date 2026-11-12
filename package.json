@@ -1,0 +1,30 @@
+{
+  "name": "famly",
+  "private": true,
+  "packageManager": "pnpm@10.18.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:test": "supabase test db",
+    "test:concurrency": "pnpm --filter @famly/concurrency-tests run test",
+    "ops:backup": "bash tools/ops/backup.sh",
+    "ops:restore-rehearsal": "bash tools/ops/restore-rehearsal.sh",
+    "ops:metrics": "bash tools/ops/metrics.sh"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "supabase": "^2.121.0",
+    "turbo": "^2.11.8",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.5",
+    "wrangler": "^4.151.0"
+  }
+}

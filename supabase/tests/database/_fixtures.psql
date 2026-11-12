@@ -1,0 +1,37 @@
+-- Shared fixture helpers for pgTAP files. Loaded by each test via \ir.
+-- Two groups (A, B), three users (a1, a2 in A; b1 in B), one car per group.
+-- Fixed UUIDs keep assertions readable.
+
+insert into auth.users (id, email, raw_user_meta_data) values
+  ('00000000-0000-0000-0000-0000000000a1', 'a1@test.local', '{"display_name":"Asha"}'),
+  ('00000000-0000-0000-0000-0000000000a2', 'a2@test.local', '{"display_name":"Sam"}'),
+  ('00000000-0000-0000-0000-0000000000b1', 'b1@test.local', '{"display_name":"Bea"}');
+
+insert into public.family_group (id, name) values
+  ('00000000-0000-0000-0000-00000000000a', 'Family A'),
+  ('00000000-0000-0000-0000-00000000000b', 'Family B');
+
+insert into public.group_membership (group_id, user_id, role) values
+  ('00000000-0000-0000-0000-00000000000a', '00000000-0000-0000-0000-0000000000a1', 'custodian'),
+  ('00000000-0000-0000-0000-00000000000a', '00000000-0000-0000-0000-0000000000a2', 'member'),
+  ('00000000-0000-0000-0000-00000000000b', '00000000-0000-0000-0000-0000000000b1', 'custodian');
+
+insert into public.vehicle (id, group_id, name) values
+  ('00000000-0000-0000-0000-0000000000ca', '00000000-0000-0000-0000-00000000000a', 'Family A Car'),
+  ('00000000-0000-0000-0000-0000000000cb', '00000000-0000-0000-0000-00000000000b', 'Family B Car');
+
+-- Impersonate a user for the rest of the transaction (or until the next call / reset role).
+create function pg_temp.login_as(p_uid uuid) returns void language plpgsql as $$
+begin
+  perform set_config('request.jwt.claims',
+    json_build_object('sub', p_uid, 'role', 'authenticated')::text, true);
+  execute 'set local role authenticated';
+end;
+$$;
+
+create function pg_temp.logout() returns void language plpgsql as $$
+begin
+  execute 'reset role';
+  perform set_config('request.jwt.claims', '', true);
+end;
+$$;
