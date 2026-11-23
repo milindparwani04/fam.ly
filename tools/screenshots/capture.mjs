@@ -156,6 +156,13 @@ async function main() {
   await shot("10-profile");
   await go("/family/create");
   await shot("11-new-plan");
+  await go("/documents");
+  await shot("12-documents");
+  await go("/documents/0000dead-0000-4000-8000-0000000000d1");
+  await shot("13-doc-folder");
+  await click(".doc-card", "Home insurance");
+  await click("button.secondary", "Edit");
+  await shot("14-doc-edit");
   b.close();
 }
 

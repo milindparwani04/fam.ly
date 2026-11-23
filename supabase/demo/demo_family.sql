@@ -174,6 +174,51 @@ begin
                                  'Arriving by train, King''s Cross 16:20');
   perform pg_temp.act_as_admin();
 
+  -- Documents (Settings → Documents): four household folders. Written directly with placeholder Storage rows (no file
+  -- bytes), so the list, labels and editor all show; "Open File" on a demo document has nothing behind it.
+  insert into public.doc_folder (id, group_id, name, created_by, created_at) values
+    ('0000dead-0000-4000-8000-0000000000d1', v_group, 'Home & Bills', v_maya, now() - interval '60 days'),
+    ('0000dead-0000-4000-8000-0000000000d2', v_group, 'Cars', v_alex, now() - interval '59 days'),
+    ('0000dead-0000-4000-8000-0000000000d3', v_group, 'Medical', v_rose, now() - interval '58 days'),
+    ('0000dead-0000-4000-8000-0000000000d4', v_group, 'Holidays', v_alex, now() - interval '57 days');
+  with docs (folder, title, label, comment, file_name, mime, size, who, age) as (values
+    ('d1', 'Home insurance policy', 'Insurance', E'Renews 14 March. Policy number is on page 2.\nBuildings and contents, £250 excess.',
+       'home-insurance-2026.pdf', 'application/pdf', 486000, v_maya, 41),
+    ('d1', 'Boiler service record', 'Receipt', 'Last serviced in March. Due again before winter.',
+       'boiler-service.jpg', 'image/jpeg', 1830000, v_alex, 236),
+    ('d1', 'Council tax 2026/27', 'Bank', 'Band D, paid monthly by direct debit on the 1st.',
+       'council-tax-2026-27.pdf', 'application/pdf', 212000, v_maya, 200),
+    ('d1', 'Energy bill — October', null, null, 'energy-bill-oct.pdf', 'application/pdf', 154000, v_alex, 23),
+    ('d2', 'Family Van logbook (V5C)', 'Logbook', 'Registered to Maya. Original is in the study drawer.',
+       'van-v5c.pdf', 'application/pdf', 734000, v_maya, 300),
+    ('d2', 'Blue Hatchback MOT', 'MOT', 'Passed with one advisory: rear tyres. Next MOT due in June.',
+       'hatchback-mot.pdf', 'application/pdf', 98000, v_alex, 160),
+    ('d2', 'Car insurance', 'Insurance', 'Both cars on one policy. Leo is a named driver.',
+       'car-insurance.pdf', 'application/pdf', 402000, v_alex, 95),
+    ('d3', 'Rose''s repeat prescription', 'Medical', 'Collect from the pharmacy on the high street.',
+       'rose-prescription.jpg', 'image/jpeg', 1210000, v_rose, 12),
+    ('d3', 'Leo''s vaccination record', 'Medical', null, 'leo-vaccinations.pdf', 'application/pdf', 318000, v_maya, 410),
+    ('d3', 'Dentist check-ups', null, 'Oakfield Dental, every six months.', 'dentist-letter.pdf', 'application/pdf', 87000, v_maya, 64),
+    ('d4', 'Alex''s passport', 'Passport', 'Expires March 2031.', 'alex-passport.jpg', 'image/jpeg', 2140000, v_alex, 120),
+    ('d4', 'Ben''s flight to London', 'Ticket', 'Lands Heathrow T2 at 07:40. Booking ref on page 1.',
+       'ben-flight.pdf', 'application/pdf', 264000, v_ben, 6),
+    ('d4', 'Travel insurance', 'Insurance', 'Annual multi-trip, covers the whole family in Europe.',
+       'travel-insurance.pdf', 'application/pdf', 377000, v_alex, 88)
+  ), rows as (
+    select gen_random_uuid() as id, ('0000dead-0000-4000-8000-0000000000' || folder)::uuid as folder_id, docs.*
+    from docs
+  ), files as (
+    insert into storage.objects (bucket_id, name, owner, metadata, created_at)
+    select 'family-docs', v_group || '/' || id || '/' || file_name, who,
+           jsonb_build_object('size', size, 'mimetype', mime), now() - make_interval(days => age)
+    from rows
+  )
+  insert into public.family_document (id, group_id, folder_id, title, label, comment, file_name, mime_type, size_bytes,
+                                      storage_path, uploaded_by, created_at, updated_at)
+  select id, v_group, folder_id, title, label, comment, file_name, mime, size,
+         v_group || '/' || id || '/' || file_name, who, now() - make_interval(days => age), now() - make_interval(days => age)
+  from rows;
+
   perform app.process_outbox(500);
   raise notice 'Demo family ready. Signed in as Alex Carter.';
 end
