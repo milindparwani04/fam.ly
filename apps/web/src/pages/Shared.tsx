@@ -8,6 +8,7 @@ export function Shared() {
         <li>The family's cars, maintenance windows and every booking</li>
         <li>Family calendar events and outings, including destination and notes</li>
         <li>"Left" and "I'm home" updates, and when they were reported</li>
+        <li>Documents: every folder and file, with its title, label and comments</li>
         <li>A history of changes (who did what, and when)</li>
       </ul>
       <h3>What fam.ly Does Not Do</h3>

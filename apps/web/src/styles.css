@@ -760,3 +760,84 @@ a.add-stay { background: var(--mint); color: var(--ink); box-shadow: var(--shado
 .person-plan .mid { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .person-plan .title { font-weight: 700; font-size: 15px; overflow-wrap: anywhere; }
 .person-plan .sub { font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
+
+/* ---------------------------------------------------------------- Documents (Settings → Documents, 2026-11-23) */
+.folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.folder-tile {
+  position: relative; min-height: 112px; padding: 14px; border: 2px solid var(--ink); border-radius: 6px 18px 18px 18px;
+  box-shadow: var(--shadow); color: var(--ink); text-decoration: none; display: flex; flex-direction: column;
+  align-items: flex-start; justify-content: flex-end; gap: 2px; text-align: left; font: inherit;
+}
+/* The folder tab. */
+.folder-tile::before {
+  content: ""; position: absolute; top: -9px; left: -2px; width: 46%; height: 12px;
+  border: 2px solid var(--ink); border-bottom: 0; border-radius: 8px 10px 0 0; background: inherit;
+}
+.folder-tile.sun { background: var(--sun); }
+.folder-tile.mint { background: var(--mint); }
+.folder-tile.lilac { background: var(--lilac); }
+.folder-tile.sky { background: var(--sky); }
+.folder-tile.tomato { background: var(--tomato-soft); }
+.folder-tile.new { background: transparent; border-style: dashed; box-shadow: none; }
+.folder-tile.new::before { display: none; }
+.folder-tile .folder-ico { width: 26px; height: 26px; margin-bottom: auto; }
+.folder-name { font-weight: 800; font-size: 16px; line-height: 1.15; overflow-wrap: anywhere; }
+.folder-count { font: 700 10.5px var(--mono); letter-spacing: 0.05em; text-transform: uppercase; }
+.docs-hint { font-size: 13px; }
+
+.folder-head { display: flex; align-items: center; gap: 10px; }
+.folder-head h2 { flex: 1; min-width: 0; font-size: 22px; overflow-wrap: anywhere; }
+.folder-badge { flex: none; width: 40px; height: 40px; border: 2px solid var(--ink); border-radius: 12px; display: grid; place-items: center; }
+.folder-badge svg { width: 22px; height: 22px; }
+.folder-badge.sun { background: var(--sun); }
+.folder-badge.mint { background: var(--mint); }
+.folder-badge.lilac { background: var(--lilac); }
+.folder-badge.sky { background: var(--sky); }
+.folder-badge.tomato { background: var(--tomato-soft); }
+.add-doc { background: var(--sun); }
+
+.doc-list { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.doc-card {
+  position: relative; width: 100%; min-height: 68px; padding: 12px 14px; gap: 12px; justify-content: flex-start;
+  background: var(--card); color: var(--ink); border-radius: 16px; box-shadow: var(--shadow); text-align: left;
+}
+.doc-type {
+  flex: none; width: 42px; height: 48px; border: 2px solid var(--ink); border-radius: 4px 12px 4px 4px; background: var(--page);
+  display: grid; place-items: center; font: 700 10.5px var(--mono); letter-spacing: 0.04em;
+}
+.doc-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.doc-title { font-weight: 800; font-size: 16px; line-height: 1.2; overflow-wrap: anywhere; }
+.doc-meta { font: 500 12.5px var(--font); color: var(--muted); }
+
+/* The label sticker: sits over the top-right corner of the file, slightly tilted. */
+.doc-sticker {
+  display: inline-block; padding: 3px 8px; border: 2px solid var(--ink); border-radius: 8px; box-shadow: var(--shadow-sm);
+  font: 700 10.5px/1.2 var(--mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink); white-space: nowrap;
+  background: var(--sun);
+}
+.doc-card .doc-sticker { position: absolute; top: -11px; right: 12px; transform: rotate(3deg); }
+.doc-sticker.sun { background: var(--sun); }
+.doc-sticker.mint { background: var(--mint); }
+.doc-sticker.lilac { background: var(--lilac); }
+.doc-sticker.sky { background: var(--sky); }
+.doc-sticker.tomato { background: var(--tomato-soft); }
+.doc-sticker.big { position: absolute; top: 10px; right: -10px; transform: rotate(6deg); font-size: 12.5px; padding: 5px 10px; }
+
+.label-picks { display: flex; flex-wrap: wrap; gap: 8px; margin-top: -4px; }
+.doc-sticker.pick { min-height: 32px; padding: 4px 10px; box-shadow: none; cursor: pointer; }
+.doc-sticker.pick:active { transform: translate(1px, 1px); }
+
+.picked-file { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 2px dashed var(--ink); border-radius: 14px; }
+.picked-file .doc-title { font-size: 14.5px; }
+
+.doc-preview {
+  position: relative; align-self: center; width: 120px; height: 140px; margin: 8px 0 2px; border: 2px solid var(--ink);
+  border-radius: 6px 26px 6px 6px; background: var(--page); box-shadow: var(--shadow); display: grid; place-items: center;
+}
+.doc-preview-ico { width: 44px; height: 44px; stroke-width: 1.5; opacity: 0.35; }
+.doc-preview .doc-type { position: absolute; left: 10px; bottom: 10px; width: auto; height: auto; padding: 2px 6px; border-radius: 6px; background: var(--card); }
+.doc-comment { border: 2px solid var(--ink); border-radius: 14px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; background: var(--page); }
+.doc-comment p { font-size: 14.5px; line-height: 1.4; }
+a.button.confirm-link { min-height: 52px; background: var(--mint); color: var(--ink); font-size: 17px; font-weight: 800; box-shadow: var(--shadow); }
+button.secondary.danger-text { color: var(--danger); }
+.danger-link { color: var(--danger); align-self: flex-start; }

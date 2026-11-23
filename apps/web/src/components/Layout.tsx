@@ -47,6 +47,8 @@ function subpageOf(pathname: string, search: string): { title: string; parent: s
     [/^\/book$/, "Book A Car", "/cars"],
     [/^\/settings$/, "Settings", "/"],
     [/^\/shared$/, "What's Shared", "/settings"],
+    [/^\/documents$/, "Documents", "/settings"],
+    [/^\/documents\//, "Documents", "/documents"],
   ];
   const hit = rules.find(([re]) => re.test(pathname));
   return hit ? { title: hit[1], parent: hit[2] } : { title: "", parent: "/" };

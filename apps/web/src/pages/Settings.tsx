@@ -24,6 +24,18 @@ export function Settings() {
       <h2 className="eyebrow">WORK</h2>
       <WorkHours familyName={group.name} />
 
+      <h2 className="eyebrow">DOCUMENTS</h2>
+      <div className="set-card flat">
+        <ul className="rows">
+          <li>
+            <Link to="/documents" className="rowlink">
+              <span className="text"><span className="title">Documents</span><span className="sub">Family papers in folders. Everyone in {group.name} can see them.</span></span>
+              <ChevronRight className="chev" />
+            </Link>
+          </li>
+        </ul>
+      </div>
+
       <h2 className="eyebrow">PRIVACY</h2>
       <div className="set-card flat">
         <ul className="rows">

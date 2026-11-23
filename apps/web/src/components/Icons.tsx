@@ -149,3 +149,21 @@ export const BagIcon = (p: P) => (
     <path d="M9 10.5V7a3 3 0 0 1 6 0v3.5" />
   </Svg>
 );
+
+/** Documents: a folder. */
+export const FolderIcon = (p: P) => (
+  <Svg {...p}><path d="M3.5 7.5a1.5 1.5 0 0 1 1.5-1.5h4.2l2 2.2H19a1.5 1.5 0 0 1 1.5 1.5v8.3a1.5 1.5 0 0 1-1.5 1.5H5a1.5 1.5 0 0 1-1.5-1.5z" /></Svg>
+);
+
+/** Documents: a page with a folded corner. */
+export const FileIcon = (p: P) => (
+  <Svg {...p}><path d="M7 3.5h7l4.5 4.5v11a1.5 1.5 0 0 1-1.5 1.5H7a1.5 1.5 0 0 1-1.5-1.5V5A1.5 1.5 0 0 1 7 3.5z" /><path d="M13.5 3.5V8.5h5" /></Svg>
+);
+
+export const UploadIcon = (p: P) => (
+  <Svg {...p}><path d="M12 15.5v-11M7.5 9 12 4.5 16.5 9M5 19.5h14" /></Svg>
+);
+
+export const ExternalIcon = (p: P) => (
+  <Svg {...p}><path d="M13.5 5.5h5v5M18.5 5.5 11 13M16.5 14v4a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 18V9A1.5 1.5 0 0 1 6 7.5h4" /></Svg>
+);

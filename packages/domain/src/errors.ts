@@ -71,6 +71,11 @@ export const RPC_ERROR_CODES = [
   "repeat_not_allowed",
   "repeat_too_long",
   "use_trip",
+  "invalid_folder_name",
+  "duplicate_folder",
+  "invalid_doc_title",
+  "label_too_long",
+  "file_missing",
 ] as const;
 export type RpcErrorCode = (typeof RPC_ERROR_CODES)[number] | "unknown";
 
@@ -173,6 +178,11 @@ const MESSAGES: Record<RpcErrorCode, string> = {
   repeat_not_allowed: "Car trips can't repeat. Book each trip on its own.",
   repeat_too_long: "This plan is too long to repeat that often.",
   use_trip: "This plan has your booked trip. Leave from the booking so the car shows as in use.",
+  invalid_folder_name: "Please give the folder a name (up to 60 characters).",
+  duplicate_folder: "There's already a folder with that name.",
+  invalid_doc_title: "Please give the document a title (up to 80 characters).",
+  label_too_long: "Keep the label short: up to 24 characters.",
+  file_missing: "The file didn't finish uploading. Please try again.",
   unknown: "Something went wrong. Please try again.",
 };
 

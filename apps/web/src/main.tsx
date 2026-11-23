@@ -20,6 +20,7 @@ import { BookingDetail } from "./pages/BookingDetail";
 import { Calendar } from "./pages/Calendar";
 import { CarDetail } from "./pages/CarDetail";
 import { Cars } from "./pages/Cars";
+import { DocFolder, Documents } from "./pages/Documents";
 import { EventDetail } from "./pages/EventDetail";
 import { AllPlans, AllTasks, FamilyCalendar } from "./pages/FamilyCalendar";
 import { FamilyHome } from "./pages/FamilyHome";
@@ -123,6 +124,8 @@ const router = createBrowserRouter([
       { path: "family/stays/new", element: <NewStay /> },
       { path: "family/stays/:stayId", element: <StayDetail /> },
       { path: "settings", element: <Settings /> },
+      { path: "documents", element: <Documents /> },
+      { path: "documents/:folderId", element: <DocFolder /> },
       { path: "shared", element: <Shared /> },
     ],
   },

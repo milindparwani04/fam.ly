@@ -83,6 +83,26 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"doc_folder": {
+                  Row: {
+                    "created_at": string,"created_by": string | null,"group_id": string,"id": string,"name": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"created_by"?: string | null,"group_id": string,"id"?: string,"name": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"created_by"?: string | null,"group_id"?: string,"id"?: string,"name"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "doc_folder_group_id_fkey"
+      columns: ["group_id"]
+isOneToOne: false
+      referencedRelation: "family_group"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"event_participant": {
                   Row: {
                     "event_id": string,"group_id": string,"responded_at": string | null,"state": Database["public"]['Enums']["participant_state"],"user_id": string
@@ -100,6 +120,26 @@ isOneToOne: false
       columns: ["group_id","event_id"]
 isOneToOne: false
       referencedRelation: "family_event"
+      referencedColumns: ["group_id","id"]
+    }
+                  ]
+                },"family_document": {
+                  Row: {
+                    "comment": string | null,"created_at": string,"file_name": string,"folder_id": string,"group_id": string,"id": string,"label": string | null,"mime_type": string,"size_bytes": number,"storage_path": string,"title": string,"updated_at": string,"uploaded_by": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "comment"?: string | null,"created_at"?: string,"file_name": string,"folder_id": string,"group_id": string,"id"?: string,"label"?: string | null,"mime_type": string,"size_bytes": number,"storage_path": string,"title": string,"updated_at"?: string,"uploaded_by"?: string | null
+                  }
+                  Update: {
+                    "comment"?: string | null,"created_at"?: string,"file_name"?: string,"folder_id"?: string,"group_id"?: string,"id"?: string,"label"?: string | null,"mime_type"?: string,"size_bytes"?: number,"storage_path"?: string,"title"?: string,"updated_at"?: string,"uploaded_by"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "family_document_group_id_folder_id_fkey"
+      columns: ["group_id","folder_id"]
+isOneToOne: false
+      referencedRelation: "doc_folder"
       referencedColumns: ["group_id","id"]
     }
                   ]
@@ -581,6 +621,9 @@ isOneToOne: false
 "rpc_add_booking_to_calendar":
 { Args: { "p_description"?: string,"p_destination"?: string,"p_participant_ids"?: (string)[],"p_reservation_id": string,"p_title": string }; Returns: string
                            },
+"rpc_add_document":
+{ Args: { "p_comment"?: string,"p_document_id": string,"p_folder_id": string,"p_label"?: string,"p_storage_path": string,"p_title": string }; Returns: string
+                           },
 "rpc_add_unavailability":
 { Args: { "p_ends_at": string,"p_reason"?: string,"p_starts_at": string,"p_vehicle_id": string }; Returns: string
                            },
@@ -611,6 +654,9 @@ isOneToOne: false
 "rpc_correct_status":
 { Args: { "p_idempotency_key": string,"p_outing_id": string,"p_reason": string,"p_undo": string }; Returns: Json
                            },
+"rpc_create_doc_folder":
+{ Args: { "p_group_id": string,"p_name": string }; Returns: string
+                           },
 "rpc_create_event":
 { Args: { "p_description"?: string,"p_destination"?: string,"p_ends_at": string,"p_group_id": string,"p_participant_ids"?: (string)[],"p_starts_at": string,"p_title": string,"p_track_outing"?: boolean }; Returns: string
                            },
@@ -631,6 +677,12 @@ isOneToOne: false
                            },
 "rpc_create_task":
 { Args: { "p_assignee_ids"?: (string)[],"p_description"?: string,"p_group_id": string,"p_title": string }; Returns: string
+                           },
+"rpc_delete_doc_folder":
+{ Args: { "p_folder_id": string }; Returns: (string)[]
+                           },
+"rpc_delete_document":
+{ Args: { "p_document_id": string }; Returns: string
                            },
 "rpc_delete_my_account":
 { Args: { "p_confirm": string }; Returns: undefined
@@ -667,6 +719,9 @@ isOneToOne: false
                            },
 "rpc_remove_unavailability":
 { Args: { "p_unavailability_id": string }; Returns: undefined
+                           },
+"rpc_rename_doc_folder":
+{ Args: { "p_folder_id": string,"p_name": string }; Returns: undefined
                            },
 "rpc_reopen_task":
 { Args: { "p_task_id": string }; Returns: undefined
@@ -718,6 +773,9 @@ isOneToOne: false
                            },
 "rpc_unregister_device":
 { Args: { "p_endpoint": string }; Returns: undefined
+                           },
+"rpc_update_document":
+{ Args: { "p_comment": string,"p_document_id": string,"p_folder_id"?: string,"p_label": string,"p_title": string }; Returns: undefined
                            },
 "rpc_update_event":
 { Args: { "p_description": string,"p_destination": string,"p_ends_at": string,"p_event_id": string,"p_expected_version": number,"p_participant_ids": (string)[],"p_starts_at": string,"p_title": string }; Returns: number
