@@ -618,9 +618,6 @@ isOneToOne: false
 "rpc_accept_menu":
 { Args: { "p_menu_id": string,"p_version": number }; Returns: undefined
                            },
-"rpc_add_booking_to_calendar":
-{ Args: { "p_description"?: string,"p_destination"?: string,"p_participant_ids"?: (string)[],"p_reservation_id": string,"p_title": string }; Returns: string
-                           },
 "rpc_add_document":
 { Args: { "p_comment"?: string,"p_document_id": string,"p_folder_id": string,"p_label"?: string,"p_storage_path": string,"p_title": string }; Returns: string
                            },

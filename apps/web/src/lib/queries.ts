@@ -201,8 +201,9 @@ export function useCalendar(groupId: string, start: Date, end: Date) {
 
 /** Query keys to refresh after any booking change. */
 export function bookingKeys(groupId: string, bookingId?: string): string[][] {
-  const keys = [["car-activity", groupId], ["calendar", groupId]];
-  if (bookingId) keys.push(["booking", bookingId], ["booking-history", bookingId]);
+  // Every booking is also a plan, so the plan lists change with it.
+  const keys = [["car-activity", groupId], ["calendar", groupId], ["family-events", groupId]];
+  if (bookingId) keys.push(["booking", bookingId], ["booking-history", bookingId], ["family-event-for-booking", bookingId]);
   return keys;
 }
 

@@ -59,7 +59,7 @@ function EventBody({ group }: { group: Group }) {
   );
   const cancel = useAction(
     async () => unwrap(await supabase.rpc("rpc_cancel_event", { p_event_id: eventId })),
-    [...keys, ["family-event-for-booking", event.data?.reservation_id ?? ""]],
+    keys,
   );
 
   if (event.isPending) return <p>Loading…</p>;
@@ -121,7 +121,7 @@ function EventBody({ group }: { group: Group }) {
     <div className="stack">
       <section className="card stack">
         <h2>{e.title}</h2>
-        {e.cancelled_at && <p className="warn-text">{kind === "booking" ? "Removed from the Family calendar." : "Cancelled."}</p>}
+        {e.cancelled_at && <p className="warn-text">Cancelled.</p>}
         <p className="big">{formatWindow(new Date(e.starts_at), new Date(e.ends_at), now, tz)}</p>
         {e.repeat && <p className="chip info"><span className="glyph" aria-hidden="true">↻</span><span>{repeatLabel(e.repeat, wallDate(new Date(e.starts_at), tz), e.repeat_until)}</span></p>}
         {e.destination && <p>📍 {e.destination}</p>}
@@ -170,22 +170,20 @@ function EventBody({ group }: { group: Group }) {
       {canChange && (
         <>
           <button className="secondary" onClick={() => setEditing(true)}>Edit</button>
-          {!confirmCancel ? (
+          {kind === "booking" ? (
+            <p className="muted">To take this off the calendar, cancel the booking.</p>
+          ) : !confirmCancel ? (
             <button className="link danger" onClick={() => setConfirmCancel(true)}>
-              {kind === "booking" ? "Remove From Family Calendar…" : kind === "outing" ? "Cancel Outing…" : "Cancel Event…"}
+              {kind === "outing" ? "Cancel Outing…" : "Cancel Event…"}
             </button>
           ) : (
             <section className="card stack">
-              <p>
-                {kind === "booking"
-                  ? "Remove this from the Family calendar? Your car booking stays as it is."
-                  : "Cancel this for everyone?"}
-              </p>
+              <p>Cancel this for everyone?</p>
               {cancel.error && <p className="error">{messageOf(cancel.error)}</p>}
               <div className="row">
                 <button className="danger" disabled={cancel.isPending}
                         onClick={() => cancel.mutate(undefined, { onSuccess: () => navigate("/family") })}>
-                  {kind === "booking" ? "Remove" : "Cancel It"}
+                  Cancel It
                 </button>
                 <button className="link" onClick={() => setConfirmCancel(false)}>Keep It</button>
               </div>

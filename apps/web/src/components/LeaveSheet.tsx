@@ -30,9 +30,12 @@ export function LeaveSheet({ groupId, timeZone, outingId }: { groupId: string; t
   const taking = !!(trip && carName && withCar);
   // Your plans for the rest of today (founder, 2026-11-12): leave for one and the family sees its "where".
   const upcoming = useUpcomingPlans(groupId, timeZone, 1);
-  const myPlans = upcoming.plans.filter((p) => isInPlan(p, uid, true)).slice(0, 4);
   const tripFor = (p: PlanTime) => activity.data?.outings.find((o) =>
     o.owner_id === uid && o.status === "planned" && ((p.outingId && o.id === p.outingId) || (p.reservationId && o.reservation_id === p.reservationId))) ?? null;
+  // All of them (the sheet scrolls), except your own car trip once there's no trip left to leave on.
+  const myPlans = upcoming.plans.filter(
+    (p) => isInPlan(p, uid, true) && !(p.reservationId && p.createdBy === uid && !tripFor(p)),
+  );
   const carOf = (p: PlanTime) => {
     const b = p.reservationId ? activity.data?.bookings.find((x) => x.id === p.reservationId) : undefined;
     return b ? (vehicles.data?.find((v) => v.id === b.vehicle_id)?.name ?? "Car") : null;

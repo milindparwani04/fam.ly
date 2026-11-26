@@ -1,6 +1,6 @@
 -- P06: FR-F01..F03, FR-F05, FR-F06, FR-V09, T05.
 begin;
-select plan(34);
+select plan(39);
 
 \ir _fixtures.psql
 
@@ -94,20 +94,28 @@ select is((select o.status::text from public.outing o join public.family_event e
             where e.id = current_setting('t.e3')::uuid), 'cancelled', 'the car-free outing is cancelled with it');
 
 -------------------------------------------------------------------------------
--- Booking on the Family calendar (FR-V09, FR-F05, journey 8)
+-- Every booking is on the Family calendar (migration 021)
 -------------------------------------------------------------------------------
 select set_config('t.r1', public.rpc_create_reservation('00000000-0000-0000-0000-0000000000ca',
   '2027-07-10 09:00+04', '2027-07-10 13:00+04', 'p06-a1-00001')::text, true);
-select set_config('t.e4', public.rpc_add_booking_to_calendar(current_setting('t.r1')::uuid, 'Beach day',
-  'Jumeirah', null, array['00000000-0000-0000-0000-0000000000a2']::uuid[])::text, true);
-select is(public.rpc_add_booking_to_calendar(current_setting('t.r1')::uuid, 'Again'),
-  current_setting('t.e4')::uuid, 'adding the same booking twice returns the same event');
-select is((select count(*) from public.vehicle_reservation), 1::bigint,
-  'linking to the Family calendar created no extra booking');
-
-select pg_temp.login_as('00000000-0000-0000-0000-0000000000a2');
-select throws_ok(format('select public.rpc_add_booking_to_calendar(%L, %L)', current_setting('t.r1'), 'Mine now'),
-  '42501', 'not_owner', 'only the booking owner can put it on the Family calendar');
+select set_config('t.e4', (select id::text from public.family_event
+  where reservation_id = current_setting('t.r1')::uuid and cancelled_at is null), true);
+select is((select title from public.family_event where id = current_setting('t.e4')::uuid),
+  'Family A Car trip', 'booking a car puts it on the Family calendar by itself');
+select results_eq(
+  format('select user_id, state::text from public.event_participant where event_id = %L', current_setting('t.e4')),
+  $$ values ('00000000-0000-0000-0000-0000000000a1'::uuid, 'attending') $$,
+  'the booker is going, and nobody else is invited yet');
+select is((select e.outing_id from public.family_event e where e.id = current_setting('t.e4')::uuid),
+  (select id from public.outing where reservation_id = current_setting('t.r1')::uuid),
+  'the plan is linked to the booking''s trip, so I''m Leaving can use it');
+select public.rpc_create_reservation('00000000-0000-0000-0000-0000000000ca',
+  '2027-07-10 09:00+04', '2027-07-10 13:00+04', 'p06-a1-00001');
+select is((select count(*) from public.family_event where reservation_id = current_setting('t.r1')::uuid), 1::bigint,
+  'a retried booking is on the calendar once');
+select pg_temp.logout();
+select is((select count(*) from public.notification_outbox where subject_id = current_setting('t.e4')::uuid), 0::bigint,
+  'the automatic plan sends no push of its own (the booking already does)');
 
 select pg_temp.login_as('00000000-0000-0000-0000-0000000000a1');
 select public.rpc_update_reservation(current_setting('t.r1')::uuid, '2027-07-10 10:00+04', '2027-07-10 14:00+04', 1);
@@ -117,11 +125,27 @@ select throws_ok(
   format('select public.rpc_update_event(%L, %L, %L, %L, null, null, null, 2)', current_setting('t.e4'),
          'Beach day', '2027-07-10 08:00+04', '2027-07-10 14:00+04'),
   '55000', 'times_follow_booking', 'a linked event''s times can only change via the booking');
+select lives_ok(
+  format('select public.rpc_update_event(%L, %L, %L, %L, %L, null, %L, 2)', current_setting('t.e4'),
+         'Beach day', '2027-07-10 10:00+04', '2027-07-10 14:00+04', 'Jumeirah',
+         '{00000000-0000-0000-0000-0000000000a2}'),
+  'the booker names the trip, adds a place and invites someone');
 
-select lives_ok(format('select public.rpc_cancel_event(%L)', current_setting('t.e4')),
-  'remove the booking from the Family calendar');
-select is((select status::text from public.vehicle_reservation where id = current_setting('t.r1')::uuid),
-  'reserved', 'removing the event does not cancel the booking (FR-V09)');
+select pg_temp.login_as('00000000-0000-0000-0000-0000000000a2');
+select throws_ok(format('select public.rpc_cancel_event(%L)', current_setting('t.e4')),
+  '42501', 'not_owner', 'someone else cannot remove the trip');
+select pg_temp.login_as('00000000-0000-0000-0000-0000000000a1');
+select throws_ok(format('select public.rpc_cancel_event(%L)', current_setting('t.e4')),
+  '55000', 'cancel_the_booking', 'a booking can''t be taken off the calendar by itself');
+
+select public.rpc_cancel_reservation(current_setting('t.r1')::uuid);
+select isnt((select cancelled_at from public.family_event where id = current_setting('t.e4')::uuid), null,
+  'cancelling the booking takes it off the calendar');
+select pg_temp.logout();
+select ok(exists (select 1 from public.notification_outbox
+   where subject_id = current_setting('t.e4')::uuid and event_type = 'notify.event_cancel'
+     and recipient_id = '00000000-0000-0000-0000-0000000000a2'),
+  '...and tells the person invited');
 
 -------------------------------------------------------------------------------
 -- Leaving cancels your planned car-free outings (FR-A06 / T19)

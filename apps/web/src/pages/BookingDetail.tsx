@@ -84,7 +84,7 @@ function BookingBody({ group }: { group: Group }) {
       </section>
 
       <BookingStatus booking={b} group={group} mine={mine} carName={carName} nameOf={nameOf} />
-      <OnFamilyCalendar bookingId={b.id} canAdd={mine && (b.status === "reserved" || b.status === "in_use_reported")} />
+      <OnFamilyCalendar bookingId={b.id} mine={mine} />
       {mine && b.status === "reserved" && <EditTimes booking={b} group={group} ctx={ctx} />}
       {mine && (b.status === "reserved" || b.status === "in_use_reported") && (
         <Extend booking={b} group={group} ctx={ctx} />
@@ -128,20 +128,16 @@ function BookingStatus(props: {
   );
 }
 
-/** Journey 8: the booking's Family-calendar entry, or a way to add one (linked, never duplicated). */
-function OnFamilyCalendar({ bookingId, canAdd }: { bookingId: string; canAdd: boolean }) {
+/** The booking's Family-calendar entry. Every booking has one; cancelling the booking takes it off. */
+function OnFamilyCalendar({ bookingId, mine }: { bookingId: string; mine: boolean }) {
   const linked = useEventForBooking(bookingId);
-  if (linked.isPending) return null;
-  if (linked.data) {
-    return (
-      <p className="notice">
-        On the Family calendar as <Link to={`/family/events/${linked.data.id}`}>{linked.data.title}</Link>
-      </p>
-    );
-  }
-  return canAdd ? (
-    <Link className="button secondary-link" to={`/family/new?reservation=${bookingId}`}>Add To Family Calendar</Link>
-  ) : null;
+  if (!linked.data) return null;
+  return (
+    <p className="notice">
+      On the Family calendar as <Link to={`/family/events/${linked.data.id}`}>{linked.data.title}</Link>
+      {mine && ". Open it to add a place or invite people."}
+    </p>
+  );
 }
 
 function EditTimes({ booking, group, ctx }: { booking: Booking; group: Group; ctx: Ctx }) {

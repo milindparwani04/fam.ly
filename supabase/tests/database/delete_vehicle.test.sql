@@ -15,9 +15,10 @@ insert into public.outing (id, group_id, owner_id, reservation_id, planned_start
 insert into public.status_report (group_id, outing_id, kind, reported_by, reported_at) values
   ('00000000-0000-0000-0000-00000000000a', '00000000-0000-0000-0000-000000000401', 'home_and_car_returned',
    '00000000-0000-0000-0000-0000000000a1', now() - interval '2 days');
-insert into public.family_event (id, group_id, created_by, title, starts_at, ends_at, reservation_id) values
-  ('00000000-0000-0000-0000-000000000501', '00000000-0000-0000-0000-00000000000a', '00000000-0000-0000-0000-0000000000a1',
-   'Beach day', now() - interval '3 days', now() - interval '2 days', '00000000-0000-0000-0000-000000000301');
+-- The outing put the booking on the calendar (migration 021); the family renamed the plan.
+update public.family_event set title = 'Beach day' where reservation_id = '00000000-0000-0000-0000-000000000301';
+select set_config('t.ev', (select id::text from public.family_event
+  where reservation_id = '00000000-0000-0000-0000-000000000301'), true);
 -- An upcoming booking that must block the delete until it's cancelled.
 insert into public.vehicle_reservation (id, group_id, vehicle_id, owner_id, period, status, idempotency_key) values
   ('00000000-0000-0000-0000-000000000302', '00000000-0000-0000-0000-00000000000a', '00000000-0000-0000-0000-0000000000ca',
@@ -74,9 +75,9 @@ select is((select count(*)::int from public.vehicle_reservation where vehicle_id
 select is((select count(*)::int from public.outing where id = '00000000-0000-0000-0000-000000000401'), 0, 'and their outings');
 select is((select count(*)::int from public.status_report where outing_id = '00000000-0000-0000-0000-000000000401'), 0,
   'and their status history');
-select is((select title from public.family_event where id = '00000000-0000-0000-0000-000000000501'), 'Beach day',
+select is((select title from public.family_event where id = current_setting('t.ev')::uuid), 'Beach day',
   'the family event is kept');
-select is((select reservation_id from public.family_event where id = '00000000-0000-0000-0000-000000000501'), null,
+select is((select reservation_id from public.family_event where id = current_setting('t.ev')::uuid), null,
   'and only loses its car link');
 select is((select count(*)::int from public.audit_log
             where action = 'vehicle.delete' and target_id = '00000000-0000-0000-0000-0000000000ca'

@@ -11,7 +11,7 @@ select pg_temp.login_as('00000000-0000-0000-0000-0000000000a1');
 select set_config('f.res', public.rpc_create_reservation('00000000-0000-0000-0000-0000000000ca',
   now() + interval '20 minutes', now() + interval '2 hours', 'fuzz-a1-0001')::text, true);
 select set_config('f.outing', (select id from public.outing where reservation_id = current_setting('f.res')::uuid)::text, true);
-select set_config('f.event', public.rpc_add_booking_to_calendar(current_setting('f.res')::uuid, 'Trip')::text, true);
+select set_config('f.event', (select id::text from public.family_event where reservation_id = current_setting('f.res')::uuid), true);
 select set_config('f.unav', public.rpc_add_unavailability('00000000-0000-0000-0000-0000000000ca',
   now() + interval '3 days', now() + interval '4 days', 'Service')::text, true);
 select set_config('f.invite', (public.rpc_create_invite('00000000-0000-0000-0000-00000000000a') ->> 'invitation_id'), true);
